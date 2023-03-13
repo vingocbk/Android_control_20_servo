@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#45151414"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imgMenuListDevice"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:background="@mipmap/ic_menu_listdevice" />
+
+        <ImageView
+            android:id="@+id/imgBluetoothConnection"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:background="@mipmap/ic_bluetooth_disconnected" />
+
+        <TextView
+            android:id="@+id/txtNameBluetoothConnection"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:text="No Connected"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#45151414"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/llSelectSettingMode"
+            android:weightSum="2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <LinearLayout
+                android:id="@+id/llSelectSettingPreset"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="#45151414"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:background="@mipmap/icon_setting"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llSelectSettingTour"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:background="@mipmap/icon_run_setting"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"/>
+            </LinearLayout>
+        </LinearLayout>
+        <include
+            android:layout_below="@+id/llSelectSettingMode"
+            android:id="@+id/layoutSetupStep"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/fragment_preset_data" />
+
+    </RelativeLayout>
+
+
+
+    <include
+        android:id="@+id/layoutListDevice"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/list_device" />
+
+
+</RelativeLayout>

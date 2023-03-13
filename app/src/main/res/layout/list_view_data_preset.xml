@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/txtNamePresetListView"
+        android:layout_gravity="center"
+        android:text="Name: Home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:weightSum="5"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:id="@+id/txtAnglePresetListView1"
+            android:layout_weight="1"
+            android:text="1: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView2"
+            android:layout_weight="1"
+            android:text="2: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView3"
+            android:layout_weight="1"
+            android:text="3: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView4"
+            android:layout_weight="1"
+            android:text="4: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView5"
+            android:layout_weight="1"
+            android:text="5: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+        android:weightSum="5"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:id="@+id/txtAnglePresetListView6"
+            android:layout_weight="1"
+            android:text="6: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView7"
+            android:layout_weight="1"
+            android:text="7: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView8"
+            android:layout_weight="1"
+            android:text="8: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView9"
+            android:layout_weight="1"
+            android:text="9: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView10"
+            android:layout_weight="1"
+            android:text="10: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+        android:weightSum="5"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:id="@+id/txtAnglePresetListView11"
+            android:layout_weight="1"
+            android:text="11: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView12"
+            android:layout_weight="1"
+            android:text="12: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView13"
+            android:layout_weight="1"
+            android:text="13: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView14"
+            android:layout_weight="1"
+            android:text="14: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView15"
+            android:layout_weight="1"
+            android:text="15: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+        android:weightSum="5"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:id="@+id/txtAnglePresetListView16"
+            android:layout_weight="1"
+            android:text="16: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView17"
+            android:layout_weight="1"
+            android:text="17: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView18"
+            android:layout_weight="1"
+            android:text="18: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView19"
+            android:layout_weight="1"
+            android:text="19: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtAnglePresetListView20"
+            android:layout_weight="1"
+            android:text="20: 90"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>
