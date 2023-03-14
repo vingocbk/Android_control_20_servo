@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="center"
     android:orientation="vertical"
+    android:background="@mipmap/background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <LinearLayout
         android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
         <TextView
             android:text="Name: "
             android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo1"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo2"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo3"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo4"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo5"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo6"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo7"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo8"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo9"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo10"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -204,7 +204,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo11"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -220,7 +220,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo12"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -236,7 +236,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo13"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -252,7 +252,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo14"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -268,7 +268,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo15"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -290,7 +290,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo16"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -306,7 +306,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo17"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -322,7 +322,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo18"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -338,7 +338,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo19"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -354,7 +354,7 @@
                 android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/edtAngleServo20"
-                android:hint="90"
+                android:hint="0"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"

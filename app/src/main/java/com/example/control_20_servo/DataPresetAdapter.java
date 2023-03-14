@@ -45,15 +45,36 @@ public class DataPresetAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(parent.getContext()).inflate(idLayout, parent, false);
         }
         TextView txtNamePresetListView = (TextView) convertView.findViewById(R.id.txtNamePresetListView);
-        TextView[] txtDataXYZSaved = new TextView[20];
-        txtDataXYZSaved[0] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView1);
+        TextView[] txtAnglePresetListView = new TextView[20];
+        txtAnglePresetListView[0] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView1);
+        txtAnglePresetListView[1] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView2);
+        txtAnglePresetListView[2] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView3);
+        txtAnglePresetListView[3] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView4);
+        txtAnglePresetListView[4] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView5);
+        txtAnglePresetListView[5] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView6);
+        txtAnglePresetListView[6] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView7);
+        txtAnglePresetListView[7] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView8);
+        txtAnglePresetListView[8] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView9);
+        txtAnglePresetListView[9] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView10);
+        txtAnglePresetListView[10] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView11);
+        txtAnglePresetListView[11] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView12);
+        txtAnglePresetListView[12] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView13);
+        txtAnglePresetListView[13] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView14);
+        txtAnglePresetListView[14] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView15);
+        txtAnglePresetListView[15] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView16);
+        txtAnglePresetListView[16] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView17);
+        txtAnglePresetListView[17] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView18);
+        txtAnglePresetListView[18] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView19);
+        txtAnglePresetListView[19] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView20);
+
+
         final DataPreset data = listDataPreset.get(position);
 
         if (listDataPreset != null && !listDataPreset.isEmpty()) {
-            txtNamePresetListView.setText(data.getName());
+            txtNamePresetListView.setText("Name: " + data.getName());
             int[] angle = data.getAngle();
             for(int i = 0; i < angle.length; i++){
-                txtDataXYZSaved[0].setText(String.valueOf(i) + ": " + String.valueOf(angle[i]));
+                txtAnglePresetListView[i].setText(String.valueOf(i+1) + ": " + String.valueOf(angle[i]));
             }
         }
         return convertView;

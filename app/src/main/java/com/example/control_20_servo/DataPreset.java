@@ -36,5 +36,4 @@ public class DataPreset {
             this.angleServo[i] = angleServo[i];
         }
     }
-
 }

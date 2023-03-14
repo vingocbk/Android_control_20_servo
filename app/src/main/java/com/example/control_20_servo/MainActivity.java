@@ -24,8 +24,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,8 +55,12 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar pgbRefreshListDevice;
     ListView lvListDevice;
 
-    ArrayAdapter<String> arrayAdapterListDevice;
+    ImageView imgAddPreset, imgSendDataPresetToDevice, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataFromDevice;
 
+    ArrayAdapter<String> arrayAdapterListDevice;
+    private List<DataPreset> listDataPreset;
+    private ListView lvListDataPreset;
+    RelativeLayout rlShowDataSettingMode;
 
     public static int REQUEST_BLUETOOTH = 1;
     public static int REQUEST_DISCOVERABLE_BT = 1;
@@ -72,10 +78,6 @@ public class MainActivity extends AppCompatActivity {
     ConnectedThread mConnectedThread;
     //    private Handler handler;
     Object[] ObjectBluetooth;
-
-    //variable for save name motor
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -104,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
         initLayout();
         initBluetooth();
+        loadDataBegin();
+
+        rlShowDataSettingMode.setEnabled(false);
+//        lvListDataPreset.setEnabled(false);
 
         imgMenuListDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         txtBackListDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 layoutListDevice.setVisibility(View.INVISIBLE);
                 pgbRefreshListDevice.setVisibility(View.INVISIBLE);
             }
@@ -167,9 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 for (ParcelUuid uuid : mDeviceUUIDs) {
                     Log.d(TAG, "UUID: " + uuid.getUuid().toString());
                 }
-//                ParcelUuid uuidExtra Intent intent = null;
-//                intent.getParcelableExtra("android.bluetooth.device.extra.UUID");
-//                UUID uuid = mDeviceUUIDs.getUuid();
 
 
                 ConnectThread connect = new ConnectThread(bluetoothDeviceconnect, MY_UUID_INSECURE);
@@ -209,6 +211,14 @@ public class MainActivity extends AppCompatActivity {
 
         layoutListDevice = findViewById(R.id.layoutListDevice);
 
+        lvListDataPreset = findViewById(R.id.lvListDataPreset);
+        rlShowDataSettingMode = findViewById(R.id.rlShowDataSettingMode);
+
+        imgAddPreset = findViewById(R.id.imgAddPreset);
+        imgSendDataPresetToDevice = findViewById(R.id.imgSendDataPresetToDevice);
+        imgSaveDataToLocalFile = findViewById(R.id.imgSaveDataToLocalFile);
+        imgGetDataFromLocalFile = findViewById(R.id.imgGetDataFromLocalFile);
+        imgSyncDataFromDevice = findViewById(R.id.imgSyncDataFromDevice);
 
     }
 
@@ -236,6 +246,24 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableBT, REQUEST_BLUETOOTH);
         }
         //------------------------------------------------------------------------------------------------------
+    }
+
+
+    public void loadDataBegin(){
+        listDataPreset = new ArrayList<>();
+        DataPresetAdapter adapter = new DataPresetAdapter(this, R.layout.list_view_data_preset, listDataPreset);
+        lvListDataPreset.setAdapter(adapter);
+        int[] data = new int[20];
+        for(int i = 0; i < data.length; i++){
+            data[i] = 90 +i;
+        }
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
+        listDataPreset.add(new DataPreset(1, "test", data));
     }
 
     public static boolean isConnected(BluetoothDevice device) {

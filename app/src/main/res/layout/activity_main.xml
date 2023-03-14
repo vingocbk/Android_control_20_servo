@@ -42,6 +42,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rlShowDataSettingMode"
         android:layout_marginTop="60dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
@@ -95,6 +96,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         layout="@layout/list_device" />
+
+    <RelativeLayout
+        android:id="@+id/rlBackgroundFragmentAddPreset"
+        android:background="@color/darkBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/fragment_add_preset"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
 
 
 </RelativeLayout>
