@@ -337,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
+            imgDeleteAddPreset.setVisibility(View.INVISIBLE);
             lvListDataPreset.setEnabled(false);
             edtSetNamePreset.getText().clear();
             for(int i = 0; i < 20; i++){
@@ -447,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
+            imgDeleteAddPreset.setVisibility(View.VISIBLE);
             lvListDataPreset.setEnabled(false);
             DataPreset dataPreset = listDataPreset.get(i);
             int[] angle = dataPreset.getAngle();
@@ -457,17 +459,6 @@ public class MainActivity extends AppCompatActivity {
             currentSelectedPreset = i;
         }
     };
-
-
-    public static boolean isConnected(BluetoothDevice device) {
-        try {
-            Method m = device.getClass().getMethod("isConnected", (Class[]) null);
-            boolean connected = (boolean) m.invoke(device, (Object[]) null);
-            return connected;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     private class ConnectThread extends Thread {
         private BluetoothSocket mmSocket;
