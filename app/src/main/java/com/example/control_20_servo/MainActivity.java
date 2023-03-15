@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -54,20 +55,29 @@ public class MainActivity extends AppCompatActivity {
     View layoutListDevice;
     ProgressBar pgbRefreshListDevice;
     ListView lvListDevice;
-
-    ImageView imgAddPreset, imgSendDataPresetToDevice, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataFromDevice;
-
     ArrayAdapter<String> arrayAdapterListDevice;
-    private List<DataPreset> listDataPreset;
-    private ListView lvListDataPreset;
-    RelativeLayout rlShowDataSettingMode;
+
+    LinearLayout llSelectSettingPreset, llSelectSettingTour;
+
+    public List<DataPreset> listDataPreset;
+    public ListView lvListDataPreset;
+    public RelativeLayout rlShowDataSettingMode;
+    public static ImageView imgAddPreset, imgSendDataPresetToDevice, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataFromDevice;
+    public static ImageView imgOkAddPreset, imgDeleteAddPreset, imgCancelAddPreset;
+
+    EditText edtSetNamePreset;
+    EditText[] edtAngleServo = new EditText[20];
+
+
+    public static RelativeLayout rlBackgroundFragmentAddPreset;
+
+    String dataJsonSetupBegin;
+    int currentSelectedPreset = 0;
 
     public static int REQUEST_BLUETOOTH = 1;
-    public static int REQUEST_DISCOVERABLE_BT = 1;
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
-    boolean isSwitchStep = false;
 
     String TAG = "MainActivity";
     String deviceName;
@@ -108,76 +118,14 @@ public class MainActivity extends AppCompatActivity {
         initBluetooth();
         loadDataBegin();
 
-        rlShowDataSettingMode.setEnabled(false);
-//        lvListDataPreset.setEnabled(false);
-
-        imgMenuListDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                layoutListDevice.setVisibility(View.VISIBLE);
-//                imgRefreshListDevice.setVisibility(View.VISIBLE);
-                BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-                }
-                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-                List<String> s = new ArrayList<String>();
-//                s.add("---Thiết bị đã ghép đôi---");
-                for (BluetoothDevice bt : pairedDevices) {
-                    s.add(bt.getName() + "\n" + bt.getAddress());
-                }
-                ObjectBluetooth = pairedDevices.toArray();
-//                s.add("---Thiết bị hiện có---");
-                arrayAdapterListDevice = new ArrayAdapter<String>(
-                        MainActivity.this,
-                        simple_list_item_1,
-                        s);
-                lvListDevice.setAdapter(arrayAdapterListDevice);
-            }
-        });
-
-        txtBackListDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                layoutListDevice.setVisibility(View.INVISIBLE);
-                pgbRefreshListDevice.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        lvListDevice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Log.i(TAG, arrayAdapterListdevice.getItem(i));
-                pgbRefreshListDevice.setVisibility(View.VISIBLE);
-                BluetoothDevice bluetoothDeviceconnect = (BluetoothDevice) ObjectBluetooth[i];
-
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-                }
-                deviceName = bluetoothDeviceconnect.getName();
-                String deviceAdress = bluetoothDeviceconnect.getAddress();
-
-                Log.d(TAG, "onItemClick: deviceName = " + deviceName);
-                Log.d(TAG, "onItemClick: deviceAdress = " + deviceAdress);
-                Log.d(TAG, "Trying to Pair with " + deviceName);
-                bluetoothDeviceconnect.createBond();
-
-                mDeviceUUIDs = bluetoothDeviceconnect.getUuids();
-
-
-                Log.d(TAG, "Trying to create UUID: " + deviceName);
-
-                for (ParcelUuid uuid : mDeviceUUIDs) {
-                    Log.d(TAG, "UUID: " + uuid.getUuid().toString());
-                }
-
-
-                ConnectThread connect = new ConnectThread(bluetoothDeviceconnect, MY_UUID_INSECURE);
-                connect.start();
-            }
-        });
+        imgMenuListDevice.setOnClickListener(onClickImgMenuListDevice);
+        txtBackListDevice.setOnClickListener(onClickTxtBackListDevice);
+        lvListDevice.setOnItemClickListener(onClickLvListDevice);
+        imgAddPreset.setOnClickListener(onClickImgAddPreset);
+        imgOkAddPreset.setOnClickListener(onClickImgOkAddPreset);
+        imgDeleteAddPreset.setOnClickListener(onClickImgDeleteAddPreset);
+        imgCancelAddPreset.setOnClickListener(onClickImgCancelAddPreset);
+        lvListDataPreset.setOnItemClickListener(onClickLvListDataPreset);
 
     }
 
@@ -214,12 +162,42 @@ public class MainActivity extends AppCompatActivity {
         lvListDataPreset = findViewById(R.id.lvListDataPreset);
         rlShowDataSettingMode = findViewById(R.id.rlShowDataSettingMode);
 
+        llSelectSettingPreset = findViewById(R.id.llSelectSettingPreset);
+        llSelectSettingTour = findViewById(R.id.llSelectSettingTour);
+
         imgAddPreset = findViewById(R.id.imgAddPreset);
         imgSendDataPresetToDevice = findViewById(R.id.imgSendDataPresetToDevice);
         imgSaveDataToLocalFile = findViewById(R.id.imgSaveDataToLocalFile);
         imgGetDataFromLocalFile = findViewById(R.id.imgGetDataFromLocalFile);
         imgSyncDataFromDevice = findViewById(R.id.imgSyncDataFromDevice);
 
+        imgOkAddPreset = findViewById(R.id.imgOkAddPreset);
+        imgDeleteAddPreset = findViewById(R.id.imgDeleteAddPreset);
+        imgCancelAddPreset = findViewById(R.id.imgCancelAddPreset);
+
+        rlBackgroundFragmentAddPreset = findViewById(R.id.rlBackgroundFragmentAddPreset);
+
+        edtSetNamePreset = findViewById(R.id.edtSetNamePreset);
+        edtAngleServo[0] = findViewById(R.id.edtAngleServo1);
+        edtAngleServo[1] = findViewById(R.id.edtAngleServo2);
+        edtAngleServo[2] = findViewById(R.id.edtAngleServo3);
+        edtAngleServo[3] = findViewById(R.id.edtAngleServo4);
+        edtAngleServo[4] = findViewById(R.id.edtAngleServo5);
+        edtAngleServo[5] = findViewById(R.id.edtAngleServo6);
+        edtAngleServo[6] = findViewById(R.id.edtAngleServo7);
+        edtAngleServo[7] = findViewById(R.id.edtAngleServo8);
+        edtAngleServo[8] = findViewById(R.id.edtAngleServo9);
+        edtAngleServo[9] = findViewById(R.id.edtAngleServo10);
+        edtAngleServo[10] = findViewById(R.id.edtAngleServo11);
+        edtAngleServo[11] = findViewById(R.id.edtAngleServo12);
+        edtAngleServo[12] = findViewById(R.id.edtAngleServo13);
+        edtAngleServo[13] = findViewById(R.id.edtAngleServo14);
+        edtAngleServo[14] = findViewById(R.id.edtAngleServo15);
+        edtAngleServo[15] = findViewById(R.id.edtAngleServo16);
+        edtAngleServo[16] = findViewById(R.id.edtAngleServo17);
+        edtAngleServo[17] = findViewById(R.id.edtAngleServo18);
+        edtAngleServo[18] = findViewById(R.id.edtAngleServo19);
+        edtAngleServo[19] = findViewById(R.id.edtAngleServo20);
     }
 
     public void initBluetooth() {
@@ -248,23 +226,238 @@ public class MainActivity extends AppCompatActivity {
         //------------------------------------------------------------------------------------------------------
     }
 
-
     public void loadDataBegin(){
         listDataPreset = new ArrayList<>();
         DataPresetAdapter adapter = new DataPresetAdapter(this, R.layout.list_view_data_preset, listDataPreset);
         lvListDataPreset.setAdapter(adapter);
-        int[] data = new int[20];
-        for(int i = 0; i < data.length; i++){
-            data[i] = 90 +i;
+        JSONArray jsonArrayData = new JSONArray();
+        for(int i = 0; i < 3; i++){
+            JSONObject jsonObjectData = new JSONObject();
+            JSONArray jsonArrayAngle = new JSONArray();
+            try {
+                jsonObjectData.put("1", "test-" + i);
+                for(int j = 0; j < 20; j++){
+                    jsonArrayAngle.put(190+j+i);
+                }
+                jsonObjectData.put("2",jsonArrayAngle);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonArrayData.put(jsonObjectData);
         }
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
-        listDataPreset.add(new DataPreset(1, "test", data));
+        Log.i("jsonArrayData", jsonArrayData.toString());
+        dataJsonSetupBegin = jsonArrayData.toString();
+
+        //-------------------
+        try {
+            JSONArray jsonArrayDataReceive = new JSONArray(dataJsonSetupBegin);
+            for(int i = 0; i < jsonArrayDataReceive.length(); i++){
+                JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
+                String name = jsonObjectData.getString("1");
+                JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
+                int[] angle = new int[20];
+                for(int j = 0; j < jsonArrayAngle.length(); j++){
+                    angle[j] = jsonArrayAngle.getInt(j);
+                }
+                listDataPreset.add(new DataPreset(i, name, angle));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+    View.OnClickListener onClickImgMenuListDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            layoutListDevice.setVisibility(View.VISIBLE);
+//                imgRefreshListDevice.setVisibility(View.VISIBLE);
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+//                    return;
+            }
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            List<String> s = new ArrayList<String>();
+//                s.add("---Thiết bị đã ghép đôi---");
+            for (BluetoothDevice bt : pairedDevices) {
+                s.add(bt.getName() + "\n" + bt.getAddress());
+            }
+            ObjectBluetooth = pairedDevices.toArray();
+//                s.add("---Thiết bị hiện có---");
+            arrayAdapterListDevice = new ArrayAdapter<String>(
+                    MainActivity.this,
+                    simple_list_item_1,
+                    s);
+            lvListDevice.setAdapter(arrayAdapterListDevice);
+        }
+    };
+
+    View.OnClickListener onClickTxtBackListDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            layoutListDevice.setVisibility(View.INVISIBLE);
+            pgbRefreshListDevice.setVisibility(View.INVISIBLE);
+        }
+    };
+
+    AdapterView.OnItemClickListener onClickLvListDevice = new AdapterView.OnItemClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Log.i(TAG, arrayAdapterListdevice.getItem(i));
+            pgbRefreshListDevice.setVisibility(View.VISIBLE);
+            BluetoothDevice bluetoothDeviceconnect = (BluetoothDevice) ObjectBluetooth[i];
+
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+//                    return;
+            }
+            deviceName = bluetoothDeviceconnect.getName();
+            String deviceAdress = bluetoothDeviceconnect.getAddress();
+
+            Log.d(TAG, "onItemClick: deviceName = " + deviceName);
+            Log.d(TAG, "onItemClick: deviceAdress = " + deviceAdress);
+            Log.d(TAG, "Trying to Pair with " + deviceName);
+            bluetoothDeviceconnect.createBond();
+
+            mDeviceUUIDs = bluetoothDeviceconnect.getUuids();
+
+
+            Log.d(TAG, "Trying to create UUID: " + deviceName);
+
+            for (ParcelUuid uuid : mDeviceUUIDs) {
+                Log.d(TAG, "UUID: " + uuid.getUuid().toString());
+            }
+            ConnectThread connect = new ConnectThread(bluetoothDeviceconnect, MY_UUID_INSECURE);
+            connect.start();
+        }
+    };
+
+    View.OnClickListener onClickImgAddPreset = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
+            lvListDataPreset.setEnabled(false);
+            edtSetNamePreset.getText().clear();
+            for(int i = 0; i < 20; i++){
+                edtAngleServo[i].getText().clear();
+            }
+            currentSelectedPreset = listDataPreset.size() + 1;
+        }
+    };
+
+    View.OnClickListener onClickImgOkAddPreset = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(edtSetNamePreset.getText().toString().equals("")){
+                Toast.makeText(MainActivity.this, "Enter Name!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
+            lvListDataPreset.setEnabled(true);
+
+            JSONArray jsonArrayData = null;
+            try {
+                JSONObject jsonObjectData = new JSONObject();
+                JSONArray jsonArrayAngle = new JSONArray();
+                jsonArrayData = new JSONArray(dataJsonSetupBegin);
+                jsonObjectData.put("1", edtSetNamePreset.getText().toString());
+                for(int i = 0; i < 20; i++){
+                    if(!edtAngleServo[i].getText().toString().equals(""))
+                    {
+                        jsonArrayAngle.put(Integer.valueOf(edtAngleServo[i].getText().toString()));
+                    }
+                    else{
+                        jsonArrayAngle.put(0);
+                    }
+                }
+                jsonObjectData.put("2",jsonArrayAngle);
+                if(currentSelectedPreset > listDataPreset.size()){
+                    jsonArrayData.put(jsonObjectData);
+                }
+                else{
+                    jsonArrayData.put(currentSelectedPreset, jsonObjectData);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i("jsonArrayData", jsonArrayData.toString());
+            dataJsonSetupBegin = jsonArrayData.toString();
+
+            //-------------------
+            try {
+                JSONArray jsonArrayDataReceive = new JSONArray(dataJsonSetupBegin);
+                listDataPreset.clear();
+                for(int i = 0; i < jsonArrayDataReceive.length(); i++){
+                    JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
+                    String name = jsonObjectData.getString("1");
+                    JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
+                    int[] angle = new int[20];
+                    for(int j = 0; j < jsonArrayAngle.length(); j++){
+                        angle[j] = jsonArrayAngle.getInt(j);
+                    }
+                    listDataPreset.add(new DataPreset(i, name, angle));
+                }
+                lvListDataPreset.invalidateViews();
+                lvListDataPreset.refreshDrawableState();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgDeleteAddPreset = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
+            lvListDataPreset.setEnabled(true);
+            try {
+                JSONArray jsonArrayData = new JSONArray(dataJsonSetupBegin);
+                jsonArrayData.remove(currentSelectedPreset);
+                dataJsonSetupBegin = jsonArrayData.toString();
+                listDataPreset.clear();
+                for(int i = 0; i < jsonArrayData.length(); i++){
+                    JSONObject jsonObjectData = jsonArrayData.getJSONObject(i);
+                    String name = jsonObjectData.getString("1");
+                    JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
+                    int[] angle = new int[20];
+                    for(int j = 0; j < jsonArrayAngle.length(); j++){
+                        angle[j] = jsonArrayAngle.getInt(j);
+                    }
+                    listDataPreset.add(new DataPreset(i, name, angle));
+                }
+                lvListDataPreset.invalidateViews();
+                lvListDataPreset.refreshDrawableState();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgCancelAddPreset = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
+            lvListDataPreset.setEnabled(true);
+        }
+    };
+
+    AdapterView.OnItemClickListener onClickLvListDataPreset = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
+            lvListDataPreset.setEnabled(false);
+            DataPreset dataPreset = listDataPreset.get(i);
+            int[] angle = dataPreset.getAngle();
+            for(int j = 0; j < angle.length; j++){
+                edtSetNamePreset.setText(dataPreset.getName());
+                edtAngleServo[j].setText(String.valueOf(angle[j]));
+            }
+            currentSelectedPreset = i;
+        }
+    };
+
 
     public static boolean isConnected(BluetoothDevice device) {
         try {

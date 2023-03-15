@@ -13,7 +13,6 @@ public class DataPresetAdapter extends BaseAdapter {
     private Context context;
     private int idLayout;
     private List<DataPreset> listDataPreset;
-    private int positionSelect = -1;
 
     public DataPresetAdapter(Context context, int idLayout, List<DataPreset> listDataPreset) {
         this.context = context;
