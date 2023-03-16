@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
@@ -19,8 +20,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.preference.PreferenceManager;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -30,6 +34,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,23 +65,37 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout llSelectSettingPreset, llSelectSettingTour;
 
     public List<DataPreset> listDataPreset;
-    public ListView lvListDataPreset;
+    ArrayAdapter<String> arrayAdapterListDataTour1, arrayAdapterListDataTour2;
+    public ListView lvListDataPreset, lvListDataTour1, lvListDataTour2;
     public RelativeLayout rlShowDataSettingMode;
-    public static ImageView imgAddPreset, imgSendDataPresetToDevice, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataFromDevice;
-    public static ImageView imgOkAddPreset, imgDeleteAddPreset, imgCancelAddPreset;
+    ImageView imgAddPreset, imgSendDataPresetToDevice, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataFromDevice;
+    ImageView imgOkAddPreset, imgDeleteAddPreset, imgCancelAddPreset;
+    ImageView imgAddTourMode1, imgAddTourMode2;
+    ImageView imgSendDataTourMode1ToDevice, imgSendDataTourMode2ToDevice, imgSendDataTourMode3ToDevice;
+    ImageView imgOkAddTour, imgDeleteAddTour, imgCancelAddTour;
 
+    Spinner spnShowPresetOpenTourMode3, spnShowPresetCloseTourMode3, spnShowPresetTourMode1And2;
+    EditText edtSetTimeDelayPresetOfTour;
     EditText edtSetNamePreset;
     EditText[] edtAngleServo = new EditText[20];
 
 
-    public static RelativeLayout rlBackgroundFragmentAddPreset;
+    public static RelativeLayout rlBackgroundFragmentAddPreset, rlBackgroundFragmentAddTour;
+    View layoutSetupPreset, layoutSetupTour;
 
-    String dataJsonSetupBegin;
-    int currentSelectedPreset = 0;
+    int currentSelectedPresetList = 0;
+    int currentSelectedTourMode = 0;
+    int currentSelectedPresetOfTourList = 0;
 
     public static int REQUEST_BLUETOOTH = 1;
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+
+    //variable for save name motor
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    String presetStr = "preset";
+    String tourStr = "tour";
 
 
     String TAG = "MainActivity";
@@ -116,16 +135,32 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
         initLayout();
         initBluetooth();
-        loadDataBegin();
+        initDataLocal();
+        loadDataPreset(sharedPreferences.getString(presetStr, ""));
+        loadDataTour(sharedPreferences.getString(tourStr, ""));
 
         imgMenuListDevice.setOnClickListener(onClickImgMenuListDevice);
         txtBackListDevice.setOnClickListener(onClickTxtBackListDevice);
         lvListDevice.setOnItemClickListener(onClickLvListDevice);
         imgAddPreset.setOnClickListener(onClickImgAddPreset);
+        imgSendDataPresetToDevice.setOnClickListener(onClickImgSendDataPresetToDevice);
+        imgSaveDataToLocalFile.setOnClickListener(onClickImgSaveDataToLocalFile);
+        imgGetDataFromLocalFile.setOnClickListener(onClickImgGetDataFromLocalFile);
+        imgSyncDataFromDevice.setOnClickListener(onClickImgSyncDataFromDevice);
         imgOkAddPreset.setOnClickListener(onClickImgOkAddPreset);
         imgDeleteAddPreset.setOnClickListener(onClickImgDeleteAddPreset);
         imgCancelAddPreset.setOnClickListener(onClickImgCancelAddPreset);
         lvListDataPreset.setOnItemClickListener(onClickLvListDataPreset);
+        llSelectSettingPreset.setOnClickListener(onClickLlSelectSettingPreset);
+        llSelectSettingTour.setOnClickListener(onClickLlSelectSettingTour);
+        imgAddTourMode1.setOnClickListener(onClickImgAddTourMode1);
+        imgAddTourMode2.setOnClickListener(onClickImgAddTourMode2);
+        imgOkAddTour.setOnClickListener(onClickImgOkAddTour);
+        imgDeleteAddTour.setOnClickListener(onClickImgDeleteAddTour);
+        imgCancelAddTour.setOnClickListener(onClickImgCancelAddTour);
+
+        lvListDataTour1.setOnItemClickListener(onClickLvListDataTour1);
+        lvListDataTour2.setOnItemClickListener(onClickLvListDataTour2);
 
     }
 
@@ -162,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
         lvListDataPreset = findViewById(R.id.lvListDataPreset);
         rlShowDataSettingMode = findViewById(R.id.rlShowDataSettingMode);
 
+        lvListDataTour1 = findViewById(R.id.lvListDataTour1);
+        lvListDataTour2 = findViewById(R.id.lvListDataTour2);
+
         llSelectSettingPreset = findViewById(R.id.llSelectSettingPreset);
         llSelectSettingTour = findViewById(R.id.llSelectSettingTour);
 
@@ -175,7 +213,23 @@ public class MainActivity extends AppCompatActivity {
         imgDeleteAddPreset = findViewById(R.id.imgDeleteAddPreset);
         imgCancelAddPreset = findViewById(R.id.imgCancelAddPreset);
 
+        imgAddTourMode1 = findViewById(R.id.imgAddTourMode1);
+        imgAddTourMode2 = findViewById(R.id.imgAddTourMode2);
+        imgSendDataTourMode1ToDevice = findViewById(R.id.imgSendDataTourMode1ToDevice);
+        imgSendDataTourMode2ToDevice = findViewById(R.id.imgSendDataTourMode2ToDevice);
+        imgSendDataTourMode3ToDevice = findViewById(R.id.imgSendDataTourMode3ToDevice);
+
+        imgOkAddTour = findViewById(R.id.imgOkAddTour);
+        imgDeleteAddTour = findViewById(R.id.imgDeleteAddTour);
+        imgCancelAddTour = findViewById(R.id.imgCancelAddTour);
+
+        edtSetTimeDelayPresetOfTour = findViewById(R.id.edtSetTimeDelayPresetOfTour);
+
         rlBackgroundFragmentAddPreset = findViewById(R.id.rlBackgroundFragmentAddPreset);
+        rlBackgroundFragmentAddTour = findViewById(R.id.rlBackgroundFragmentAddTour);
+
+        layoutSetupPreset = findViewById(R.id.layoutSetupPreset);
+        layoutSetupTour = findViewById(R.id.layoutSetupTour);
 
         edtSetNamePreset = findViewById(R.id.edtSetNamePreset);
         edtAngleServo[0] = findViewById(R.id.edtAngleServo1);
@@ -198,6 +252,10 @@ public class MainActivity extends AppCompatActivity {
         edtAngleServo[17] = findViewById(R.id.edtAngleServo18);
         edtAngleServo[18] = findViewById(R.id.edtAngleServo19);
         edtAngleServo[19] = findViewById(R.id.edtAngleServo20);
+
+        spnShowPresetOpenTourMode3 = findViewById(R.id.spnShowPresetOpenTourMode3);
+        spnShowPresetCloseTourMode3 = findViewById(R.id.spnShowPresetCloseTourMode3);
+        spnShowPresetTourMode1And2 = findViewById(R.id.spnShowPresetTourMode1And2);
     }
 
     public void initBluetooth() {
@@ -226,45 +284,123 @@ public class MainActivity extends AppCompatActivity {
         //------------------------------------------------------------------------------------------------------
     }
 
-    public void loadDataBegin(){
+    public void initDataLocal(){
+        //---------------------------------------------------save name motor--------------------------------------
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreferences.edit();
+
+    }
+
+    public void loadDataPreset(String jsonData){
         listDataPreset = new ArrayList<>();
         DataPresetAdapter adapter = new DataPresetAdapter(this, R.layout.list_view_data_preset, listDataPreset);
         lvListDataPreset.setAdapter(adapter);
-        JSONArray jsonArrayData = new JSONArray();
-        for(int i = 0; i < 3; i++){
-            JSONObject jsonObjectData = new JSONObject();
-            JSONArray jsonArrayAngle = new JSONArray();
+        //-------------------
+        if(!jsonData.equals("")){
             try {
-                jsonObjectData.put("1", "test-" + i);
-                for(int j = 0; j < 20; j++){
-                    jsonArrayAngle.put(190+j+i);
+                JSONArray jsonArrayDataReceive = new JSONArray(jsonData);
+                for(int i = 0; i < jsonArrayDataReceive.length(); i++){
+                    JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
+                    String name = jsonObjectData.getString("1");
+                    JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
+                    int[] angle = new int[20];
+                    for(int j = 0; j < jsonArrayAngle.length(); j++){
+                        angle[j] = jsonArrayAngle.getInt(j);
+                    }
+                    listDataPreset.add(new DataPreset(i, name, angle));
                 }
-                jsonObjectData.put("2",jsonArrayAngle);
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            jsonArrayData.put(jsonObjectData);
         }
-        Log.i("jsonArrayData", jsonArrayData.toString());
-        dataJsonSetupBegin = jsonArrayData.toString();
 
-        //-------------------
-        try {
-            JSONArray jsonArrayDataReceive = new JSONArray(dataJsonSetupBegin);
-            for(int i = 0; i < jsonArrayDataReceive.length(); i++){
-                JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
-                String name = jsonObjectData.getString("1");
-                JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
-                int[] angle = new int[20];
-                for(int j = 0; j < jsonArrayAngle.length(); j++){
-                    angle[j] = jsonArrayAngle.getInt(j);
+    }
+
+    public void loadDataTour(String dataTour){
+        arrayAdapterListDataTour1 = new ArrayAdapter<String>(MainActivity.this, simple_list_item_1);
+        arrayAdapterListDataTour2 = new ArrayAdapter<String>(MainActivity.this, simple_list_item_1);
+//        String dataTour = sharedPreferences.getString(tourStr, "");
+        JSONObject jsonObjectTour = new JSONObject();
+        //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":["ngoc, "tuyet"]}
+        if(!dataTour.equals("")){
+            try {
+                jsonObjectTour = new JSONObject(dataTour);
+                JSONArray jsonArrayMode1 = jsonObjectTour.getJSONArray("1");
+                for(int i = 0; i < jsonArrayMode1.length(); i++){
+                    JSONObject jsonObjectDataMode1 = jsonArrayMode1.getJSONObject(i);
+                    String name = jsonObjectDataMode1.getString("1");
+                    int time = jsonObjectDataMode1.getInt("2");
+                    arrayAdapterListDataTour1.add("Name: " + name + "\n" + "Time: " + String.valueOf(time) + "s");
                 }
-                listDataPreset.add(new DataPreset(i, name, angle));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                JSONArray jsonArrayMode2 = jsonObjectTour.getJSONArray("2");
+                for(int i = 0; i < jsonArrayMode2.length(); i++){
+                    JSONObject jsonObjectDataMode2 = jsonArrayMode2.getJSONObject(i);
+                    String name = jsonObjectDataMode2.getString("1");
+                    int time = jsonObjectDataMode2.getInt("2");
+                    arrayAdapterListDataTour2.add("Name: " + name + "\n" + "Time: " + String.valueOf(time) + "s");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                JSONArray jsonArrayMode3 = jsonObjectTour.getJSONArray("3");
+                String openMode3 = jsonArrayMode3.getString(0);
+                String closeMode3 = jsonArrayMode3.getString(1);
+                for(int i = 0; i < spnShowPresetOpenTourMode3.getAdapter().getCount(); i++){
+                    if(spnShowPresetOpenTourMode3.getAdapter().getItem(i).toString().equals(openMode3)){
+                        spnShowPresetOpenTourMode3.setSelection(i);
+                    }
+                    if(spnShowPresetCloseTourMode3.getAdapter().getItem(i).toString().equals(closeMode3)){
+                        spnShowPresetCloseTourMode3.setSelection(i);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        lvListDataTour1.setAdapter(arrayAdapterListDataTour1);
+        lvListDataTour2.setAdapter(arrayAdapterListDataTour2);
+        //update list preset to spinner
+        updateListPresetToSpinner();
+    }
+
+    public void updateListPresetToSpinner(){
+        List<String> listMode1and2 = new ArrayList<>();
+        List<String> listOpenMode3 = new ArrayList<>();
+        List<String> listCloseMode3 = new ArrayList<>();
+        try {
+            String dataJson = sharedPreferences.getString(presetStr, "");
+            JSONArray jsonArray = new JSONArray();
+            if(!dataJson.equals("")){
+                jsonArray = new JSONArray(dataJson);
+            }
+            for(int i = 0; i < jsonArray.length(); i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String name = jsonObject.getString("1");
+                listMode1and2.add(name);
+                listOpenMode3.add(name);
+                listCloseMode3.add(name);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        //Creating the ArrayAdapter instance having the country list
+        ArrayAdapter adapterMode1and2 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, listMode1and2);
+        ArrayAdapter adapterOpenMode3 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, listOpenMode3);
+        ArrayAdapter adapterCloseMode3 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, listCloseMode3);
+        adapterMode1and2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterOpenMode3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterCloseMode3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        //Setting the ArrayAdapter data on the Spinner
+        spnShowPresetTourMode1And2.setAdapter(adapterMode1and2);
+        spnShowPresetOpenTourMode3.setAdapter(adapterOpenMode3);
+        spnShowPresetCloseTourMode3.setAdapter(adapterCloseMode3);
     }
 
     View.OnClickListener onClickImgMenuListDevice = new View.OnClickListener() {
@@ -338,12 +474,61 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
             imgDeleteAddPreset.setVisibility(View.INVISIBLE);
-            lvListDataPreset.setEnabled(false);
+            disableLayout(rlShowDataSettingMode);
             edtSetNamePreset.getText().clear();
             for(int i = 0; i < 20; i++){
                 edtAngleServo[i].getText().clear();
             }
-            currentSelectedPreset = listDataPreset.size() + 1;
+            currentSelectedPresetList = lvListDataPreset.getAdapter().getCount() + 1;
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataPresetToDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+        }
+    };
+
+    View.OnClickListener onClickImgSaveDataToLocalFile = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            JSONArray jsonArray = new JSONArray();
+            if(listDataPreset.size() == 0){
+                Toast.makeText(MainActivity.this, "No data to Save", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for(int i = 0; i < listDataPreset.size(); i++){
+                DataPreset dataPreset = listDataPreset.get(i);
+                JSONObject jsonObject = new JSONObject();
+                JSONArray jsonArrayAngle = new JSONArray();
+                try {
+                    jsonObject.put("1", dataPreset.getName());
+                    int[] angle = dataPreset.getAngle();
+                    for(int j = 0; j < angle.length; j++){
+                        jsonArrayAngle.put(angle[j]);
+                    }
+                    jsonObject.put("2", jsonArrayAngle);
+                    jsonArray.put(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+//            Log.i("jsonArrayData", jsonArray.toString());
+            editor.putString(presetStr, jsonArray.toString());
+
+            Toast.makeText(MainActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    View.OnClickListener onClickImgGetDataFromLocalFile = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+        }
+    };
+
+    View.OnClickListener onClickImgSyncDataFromDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
         }
     };
 
@@ -354,14 +539,29 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Enter Name!", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if(currentSelectedPresetList > lvListDataPreset.getAdapter().getCount()){
+                Log.i("jsonArrayData", String.valueOf(lvListDataPreset.getAdapter().getCount()));
+                for(int i = 0; i < lvListDataPreset.getAdapter().getCount(); i++){
+                    DataPreset dataPreset = (DataPreset) listDataPreset.get(i);
+                    if(edtSetNamePreset.getText().toString().equals(dataPreset.getName())){
+                        Toast.makeText(MainActivity.this, "Not Enter The Same Name!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    else {
+                        Log.i("jsonArrayData", "null");
+                    }
+                }
+            }
             rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
-            lvListDataPreset.setEnabled(true);
-
-            JSONArray jsonArrayData = null;
+            enableLayout(rlShowDataSettingMode);
+            JSONArray jsonArrayData = new JSONArray();
+            String dataPreset = sharedPreferences.getString(presetStr, "");
             try {
                 JSONObject jsonObjectData = new JSONObject();
                 JSONArray jsonArrayAngle = new JSONArray();
-                jsonArrayData = new JSONArray(dataJsonSetupBegin);
+                if(!dataPreset.equals("")){
+                    jsonArrayData = new JSONArray(dataPreset);
+                }
                 jsonObjectData.put("1", edtSetNamePreset.getText().toString());
                 for(int i = 0; i < 20; i++){
                     if(!edtAngleServo[i].getText().toString().equals(""))
@@ -373,22 +573,23 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 jsonObjectData.put("2",jsonArrayAngle);
-                if(currentSelectedPreset > listDataPreset.size()){
+                if(currentSelectedPresetList > lvListDataPreset.getAdapter().getCount()){
                     jsonArrayData.put(jsonObjectData);
                 }
                 else{
-                    jsonArrayData.put(currentSelectedPreset, jsonObjectData);
+                    jsonArrayData.put(currentSelectedPresetList, jsonObjectData);
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i("jsonArrayData", jsonArrayData.toString());
-            dataJsonSetupBegin = jsonArrayData.toString();
+            dataPreset = jsonArrayData.toString();
+            editor.putString(presetStr, dataPreset);
+            editor.commit();
 
             //-------------------
             try {
-                JSONArray jsonArrayDataReceive = new JSONArray(dataJsonSetupBegin);
+                JSONArray jsonArrayDataReceive = new JSONArray(dataPreset);
                 listDataPreset.clear();
                 for(int i = 0; i < jsonArrayDataReceive.length(); i++){
                     JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
@@ -405,6 +606,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            updateListPresetToSpinner();
         }
     };
 
@@ -412,11 +614,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
-            lvListDataPreset.setEnabled(true);
+            enableLayout(rlShowDataSettingMode);
             try {
-                JSONArray jsonArrayData = new JSONArray(dataJsonSetupBegin);
-                jsonArrayData.remove(currentSelectedPreset);
-                dataJsonSetupBegin = jsonArrayData.toString();
+                String dataJson = sharedPreferences.getString(presetStr, "");
+                JSONArray jsonArrayData = new JSONArray(dataJson);
+                jsonArrayData.remove(currentSelectedPresetList);
+                dataJson = jsonArrayData.toString();
+                editor.putString(presetStr, dataJson);
+                editor.commit();
                 listDataPreset.clear();
                 for(int i = 0; i < jsonArrayData.length(); i++){
                     JSONObject jsonObjectData = jsonArrayData.getJSONObject(i);
@@ -433,6 +638,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            updateListPresetToSpinner();
         }
     };
 
@@ -440,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
-            lvListDataPreset.setEnabled(true);
+            enableLayout(rlShowDataSettingMode);
         }
     };
 
@@ -449,16 +655,254 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             rlBackgroundFragmentAddPreset.setVisibility(View.VISIBLE);
             imgDeleteAddPreset.setVisibility(View.VISIBLE);
-            lvListDataPreset.setEnabled(false);
+            disableLayout(rlShowDataSettingMode);
             DataPreset dataPreset = listDataPreset.get(i);
             int[] angle = dataPreset.getAngle();
             for(int j = 0; j < angle.length; j++){
                 edtSetNamePreset.setText(dataPreset.getName());
                 edtAngleServo[j].setText(String.valueOf(angle[j]));
             }
-            currentSelectedPreset = i;
+            currentSelectedPresetList = i;
         }
     };
+
+    View.OnClickListener onClickLlSelectSettingPreset = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            llSelectSettingPreset.setBackgroundColor(R.color.darkMenu);
+            llSelectSettingTour.setBackgroundColor(android.R.color.transparent);
+            layoutSetupPreset.setVisibility(View.VISIBLE);
+            layoutSetupTour.setVisibility(View.INVISIBLE);
+        }
+    };
+
+    View.OnClickListener onClickLlSelectSettingTour = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            llSelectSettingTour.setBackgroundColor(R.color.darkMenu);
+            llSelectSettingPreset.setBackgroundColor(android.R.color.transparent);
+            layoutSetupPreset.setVisibility(View.INVISIBLE);
+            layoutSetupTour.setVisibility(View.VISIBLE);
+            rlBackgroundFragmentAddPreset.setVisibility(View.INVISIBLE);
+        }
+    };
+
+    View.OnClickListener onClickImgAddTourMode1 = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
+            imgDeleteAddTour.setVisibility(View.INVISIBLE);
+            disableLayout(rlShowDataSettingMode);
+            currentSelectedTourMode = 1;
+            currentSelectedPresetOfTourList = lvListDataTour1.getAdapter().getCount() + 1;
+        }
+    };
+
+    View.OnClickListener onClickImgAddTourMode2 = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
+            imgDeleteAddTour.setVisibility(View.INVISIBLE);
+            disableLayout(rlShowDataSettingMode);
+            currentSelectedTourMode = 2;
+            currentSelectedPresetOfTourList = lvListDataTour2.getAdapter().getCount() + 1;
+        }
+    };
+
+    View.OnClickListener onClickImgOkAddTour = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            if(edtSetTimeDelayPresetOfTour.getText().toString().equals("") || edtSetTimeDelayPresetOfTour.getText().toString().equals("0")){
+                Toast.makeText(MainActivity.this, "Enter Time!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            rlBackgroundFragmentAddTour.setVisibility(View.INVISIBLE);
+            enableLayout(rlShowDataSettingMode);
+            if(currentSelectedTourMode == 1){
+                String dataJsonTour = sharedPreferences.getString(tourStr, "");
+                JSONObject jsonObjectTour = new JSONObject();
+                try {
+                    if(!dataJsonTour.equals("")){
+                        jsonObjectTour = new JSONObject(dataJsonTour);
+                        if(jsonObjectTour.has("1")){
+                            JSONArray jsonArrayMode1 = jsonObjectTour.getJSONArray("1");
+                            JSONObject jsonObjectMode1 = new JSONObject();
+                            jsonObjectMode1.put("1", spnShowPresetTourMode1And2.getSelectedItem().toString());
+                            jsonObjectMode1.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                            if(currentSelectedPresetOfTourList > lvListDataTour1.getAdapter().getCount()){
+                                jsonArrayMode1.put(jsonObjectMode1);
+                            }
+                            else{
+                                jsonArrayMode1.put(currentSelectedPresetOfTourList, jsonObjectMode1);
+                            }
+                            jsonObjectTour.put("1", jsonArrayMode1);
+                        }
+                        else{
+                            JSONArray jsonArrayMode1 = new JSONArray();
+                            JSONObject jsonObjectMode1 = new JSONObject();
+                            jsonObjectMode1.put("1",spnShowPresetTourMode1And2.getSelectedItem().toString());
+                            jsonObjectMode1.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                            jsonArrayMode1.put(jsonObjectMode1);
+                            jsonObjectTour.put("1", jsonArrayMode1);
+                            Log.i("jsonArrayData", jsonObjectTour.toString());
+                        }
+                        editor.putString(tourStr, jsonObjectTour.toString());
+                    }
+                    else{
+                        JSONArray jsonArrayMode1 = new JSONArray();
+                        JSONObject jsonObjectMode1 = new JSONObject();
+                        jsonObjectMode1.put("1",spnShowPresetTourMode1And2.getSelectedItem().toString());
+                        jsonObjectMode1.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                        jsonArrayMode1.put(jsonObjectMode1);
+                        jsonObjectTour.put("1", jsonArrayMode1);
+                        Log.i("jsonArrayData", jsonObjectTour.toString());
+                        editor.putString(tourStr, jsonObjectTour.toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(currentSelectedTourMode == 2){
+                String dataJsonTour = sharedPreferences.getString(tourStr, "");
+                JSONObject jsonObjectTour = new JSONObject();
+                try {
+                    if(!dataJsonTour.equals("")){
+                        jsonObjectTour = new JSONObject(dataJsonTour);
+                        if(jsonObjectTour.has("2")){
+                            JSONArray jsonArrayMode2 = jsonObjectTour.getJSONArray("2");
+                            JSONObject jsonObjectMode2 = new JSONObject();
+                            jsonObjectMode2.put("1", spnShowPresetTourMode1And2.getSelectedItem().toString());
+                            jsonObjectMode2.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                            if(currentSelectedPresetOfTourList > lvListDataTour2.getAdapter().getCount()){
+                                jsonArrayMode2.put(jsonObjectMode2);
+                            }
+                            else{
+                                jsonArrayMode2.put(currentSelectedPresetOfTourList, jsonObjectMode2);
+                            }
+                            jsonObjectTour.put("2", jsonArrayMode2);
+                        }
+                        else{
+                            JSONArray jsonArrayMode2 = new JSONArray();
+                            JSONObject jsonObjectMode2 = new JSONObject();
+                            jsonObjectMode2.put("1",spnShowPresetTourMode1And2.getSelectedItem().toString());
+                            jsonObjectMode2.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                            jsonArrayMode2.put(jsonObjectMode2);
+                            jsonObjectTour.put("2", jsonArrayMode2);
+                            Log.i("jsonArrayData", jsonObjectTour.toString());
+                        }
+                        editor.putString(tourStr, jsonObjectTour.toString());
+                    }
+                    else{
+                        JSONArray jsonArrayMode2 = new JSONArray();
+                        JSONObject jsonObjectMode2 = new JSONObject();
+                        jsonObjectMode2.put("1",spnShowPresetTourMode1And2.getSelectedItem().toString());
+                        jsonObjectMode2.put("2",Integer.valueOf(edtSetTimeDelayPresetOfTour.getText().toString()));
+                        jsonArrayMode2.put(jsonObjectMode2);
+                        jsonObjectTour.put("2", jsonArrayMode2);
+                        Log.i("jsonArrayData", jsonObjectTour.toString());
+                        editor.putString(tourStr, jsonObjectTour.toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            editor.commit();
+            loadDataTour(sharedPreferences.getString(tourStr, ""));
+        }
+    };
+
+    View.OnClickListener onClickImgDeleteAddTour = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddTour.setVisibility(View.INVISIBLE);
+            enableLayout(rlShowDataSettingMode);
+            String dataJson = sharedPreferences.getString(tourStr, "");
+            try {
+                JSONObject jsonObjectTour = new JSONObject(dataJson);
+                if(currentSelectedTourMode == 1){
+                    JSONArray jsonArrayMode1 = jsonObjectTour.getJSONArray("1");
+                    jsonArrayMode1.remove(currentSelectedPresetOfTourList);
+                    jsonObjectTour.put("1", jsonArrayMode1);
+                    editor.putString(tourStr, jsonObjectTour.toString());
+                    editor.commit();
+                    loadDataTour(sharedPreferences.getString(tourStr, ""));
+                }
+                else if(currentSelectedTourMode == 2){
+                    JSONArray jsonArrayMode2 = jsonObjectTour.getJSONArray("2");
+                    jsonArrayMode2.remove(currentSelectedPresetOfTourList);
+                    jsonObjectTour.put("2", jsonArrayMode2);
+                    editor.putString(tourStr, jsonObjectTour.toString());
+                    editor.commit();
+                    loadDataTour(sharedPreferences.getString(tourStr, ""));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgCancelAddTour = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            rlBackgroundFragmentAddTour.setVisibility(View.INVISIBLE);
+            enableLayout(rlShowDataSettingMode);
+        }
+    };
+
+    AdapterView.OnItemClickListener onClickLvListDataTour1 = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
+            imgDeleteAddTour.setVisibility(View.VISIBLE);
+            disableLayout(rlShowDataSettingMode);
+            currentSelectedTourMode = 1;
+            currentSelectedPresetOfTourList = i;
+        }
+    };
+
+    AdapterView.OnItemClickListener onClickLvListDataTour2 = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
+            imgDeleteAddTour.setVisibility(View.VISIBLE);
+            disableLayout(rlShowDataSettingMode);
+            currentSelectedTourMode = 2;
+            currentSelectedPresetOfTourList = i;
+        }
+    };
+
+
+    private static void disableLayout(ViewGroup layout) {
+        layout.setEnabled(false);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                disableLayout((ViewGroup) child);
+            } else {
+                child.setEnabled(false);
+            }
+        }
+    }
+
+    private static void enableLayout(ViewGroup layout) {
+        layout.setEnabled(true);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                enableLayout((ViewGroup) child);
+            } else {
+                child.setEnabled(true);
+            }
+        }
+    }
+
 
     private class ConnectThread extends Thread {
         private BluetoothSocket mmSocket;

@@ -15,6 +15,8 @@
         <EditText
             android:id="@+id/edtSetNamePreset"
             android:hint="Name"
+            android:textSize="15sp"
+            android:textStyle="bold"
             android:gravity="center"
             android:layout_width="150dp"
             android:layout_height="wrap_content"/>
@@ -29,15 +31,18 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="1: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
             <EditText
                 android:id="@+id/edtAngleServo1"
-                android:hint="0"
-                android:inputType="number"
+                android:layout_width="69dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:hint="0"
+                android:inputType="number" />
         </LinearLayout>
         <LinearLayout
             android:layout_weight="1"
@@ -45,6 +50,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="2: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -61,6 +68,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="3: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -77,6 +86,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="4: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -93,6 +104,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="5: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -115,6 +128,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="6: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -131,6 +146,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="7: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -147,6 +164,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="8: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -163,6 +182,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="9: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -179,6 +200,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="10: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -201,6 +224,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="11: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -217,6 +242,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="12: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -233,6 +260,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="13: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -249,6 +278,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="14: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -265,6 +296,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="15: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -287,6 +320,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="16: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -303,6 +338,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="17: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -319,6 +356,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="18: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -335,6 +374,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="19: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -351,6 +392,8 @@
             android:layout_height="match_parent">
             <TextView
                 android:text="20: "
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <EditText
@@ -367,7 +410,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
-            android:weightSum="3"
+            android:weightSum="4"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -401,6 +444,17 @@
                 <ImageView
                     android:id="@+id/imgCancelAddPreset"
                     android:background="@mipmap/icon_cancel"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgSendCurrentPresetToDevice"
+                    android:background="@mipmap/icon_send_data"
                     android:layout_width="40dp"
                     android:layout_height="40dp"/>
             </LinearLayout>

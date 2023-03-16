@@ -37,7 +37,6 @@
             android:layout_alignParentEnd="true"
             android:gravity="center"
             android:text="No Connected"
-            android:textColor="#FFFFFF"
             android:textSize="20sp" />
     </RelativeLayout>
 
@@ -59,7 +58,7 @@
                 android:id="@+id/llSelectSettingPreset"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:background="#8D151414"
+                android:background="@color/darkMenu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <ImageView

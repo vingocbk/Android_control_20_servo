@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Control_20_Servo</string>
+    <string name="app_name">Servo</string>
     <string name="back"><![CDATA[<]]></string>
     <string name="open">Open</string>
     <string name="stop">Stop</string>
