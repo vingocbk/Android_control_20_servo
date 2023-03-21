@@ -2,6 +2,7 @@ package com.example.control_20_servo;
 
 import static android.R.layout.simple_list_item_1;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,12 +14,17 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelUuid;
 import android.preference.PreferenceManager;
 import android.text.Layout;
@@ -42,6 +48,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     public static int REQUEST_BLUETOOTH = 1;
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    public static int REQUEST_CODE_SELECT_FILE_SETTING = 3;
 
     //variable for save name motor
     SharedPreferences sharedPreferences;
@@ -97,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
     String presetStr = "preset";
     String tourStr = "tour";
 
+    File fileSaveText;
+    String file_folder_name_save_setting = "Servo";
+//    String file_name_local_save_setting = "Servo.txt";
+    String file_name_download_save_setting = "fileNameServo";
 
     String TAG = "MainActivity";
     String deviceName;
@@ -174,7 +190,8 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_STORAGE,
                     1
             );
-        } else if (permission2 != PackageManager.PERMISSION_GRANTED){
+        }
+        else if (permission2 != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     this,
                     PERMISSIONS_LOCATION,
@@ -317,11 +334,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadDataTour(String dataTour){
+        //update list preset to spinner
+        updateListPresetToSpinner();
         arrayAdapterListDataTour1 = new ArrayAdapter<String>(MainActivity.this, simple_list_item_1);
         arrayAdapterListDataTour2 = new ArrayAdapter<String>(MainActivity.this, simple_list_item_1);
 //        String dataTour = sharedPreferences.getString(tourStr, "");
         JSONObject jsonObjectTour = new JSONObject();
-        //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":["ngoc, "tuyet"]}
+        //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":["ngoc", "tuyet"]}
         if(!dataTour.equals("")){
             try {
                 jsonObjectTour = new JSONObject(dataTour);
@@ -364,8 +383,7 @@ public class MainActivity extends AppCompatActivity {
         }
         lvListDataTour1.setAdapter(arrayAdapterListDataTour1);
         lvListDataTour2.setAdapter(arrayAdapterListDataTour2);
-        //update list preset to spinner
-        updateListPresetToSpinner();
+
     }
 
     public void updateListPresetToSpinner(){
@@ -492,11 +510,12 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener onClickImgSaveDataToLocalFile = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            JSONArray jsonArray = new JSONArray();
+            JSONArray jsonArrayPreset = new JSONArray();
             if(listDataPreset.size() == 0){
                 Toast.makeText(MainActivity.this, "No data to Save", Toast.LENGTH_SHORT).show();
                 return;
             }
+            //data example [{"1":"ngoc","2":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]
             for(int i = 0; i < listDataPreset.size(); i++){
                 DataPreset dataPreset = listDataPreset.get(i);
                 JSONObject jsonObject = new JSONObject();
@@ -508,21 +527,97 @@ public class MainActivity extends AppCompatActivity {
                         jsonArrayAngle.put(angle[j]);
                     }
                     jsonObject.put("2", jsonArrayAngle);
-                    jsonArray.put(jsonObject);
+                    jsonArrayPreset.put(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 //            Log.i("jsonArrayData", jsonArray.toString());
-            editor.putString(presetStr, jsonArray.toString());
+            editor.putString(presetStr, jsonArrayPreset.toString());
 
-            Toast.makeText(MainActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+            //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":["ngoc, "tuyet"]}
+            JSONObject jsonObjectTour = new JSONObject();
+            if(lvListDataTour1.getCount() > 0){
+                JSONArray jsonArrayTour1 = new JSONArray();
+                for(int i = 0; i < lvListDataTour1.getCount(); i++){
+                    String data = (String) lvListDataTour1.getItemAtPosition(i);
+                    String dataName = data.substring(6,data.indexOf("\nTime: "));
+                    String dataTime = data.substring(data.indexOf("\nTime: ") + 7, data.length()-1);
+//                    Log.i("jsonArrayData", "Name: " + dataName + " - Time: " + dataTime);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("1", dataName);
+                        jsonObject.put("2", Integer.valueOf(dataTime));
+                        jsonArrayTour1.put(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    jsonObjectTour.put("1", jsonArrayTour1);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(lvListDataTour2.getCount() > 0){
+                JSONArray jsonArrayTour2 = new JSONArray();
+                for(int i = 0; i < lvListDataTour2.getCount(); i++){
+                    String data = (String) lvListDataTour2.getItemAtPosition(i);
+                    String dataName = data.substring(6,data.indexOf("\nTime: "));
+                    String dataTime = data.substring(data.indexOf("\nTime: ") + 7, data.length()-1);
+//                    Log.i("jsonArrayData", "Name: " + dataName + " - Time: " + dataTime);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("1", dataName);
+                        jsonObject.put("2", Integer.valueOf(dataTime));
+                        jsonArrayTour2.put(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    jsonObjectTour.put("2", jsonArrayTour2);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                JSONArray jsonArrayTour3 = new JSONArray();
+                jsonArrayTour3.put((String)spnShowPresetOpenTourMode3.getSelectedItem());
+                jsonArrayTour3.put((String)spnShowPresetCloseTourMode3.getSelectedItem());
+                jsonObjectTour.put("3", jsonArrayTour3);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//            Log.i("jsonArrayData", jsonObjectTour.toString());
+            editor.putString(tourStr, jsonObjectTour.toString());
+            editor.commit();
+
+//            Toast.makeText(MainActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+            //data to file example:
+            JSONObject jsonObjectFile = new JSONObject();
+            try {
+                jsonObjectFile.put("preset", jsonArrayPreset);
+                jsonObjectFile.put("tour", jsonObjectTour);
+                Log.i("jsonArrayData", jsonObjectFile.toString());
+                saveTextFileToDownloadFolder(jsonObjectFile.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     };
 
     View.OnClickListener onClickImgGetDataFromLocalFile = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            data.setType("*/*");
+            data = Intent.createChooser(data, "Choose a file");
+            if(data.resolveActivity(getPackageManager()) != null){
+                startActivityForResult(data, REQUEST_CODE_SELECT_FILE_SETTING);
+            }
         }
     };
 
@@ -862,6 +957,15 @@ public class MainActivity extends AppCompatActivity {
             rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
             imgDeleteAddTour.setVisibility(View.VISIBLE);
             disableLayout(rlShowDataSettingMode);
+            String nameClick = (String) lvListDataTour1.getItemAtPosition(i);
+            for(int j = 0; j < spnShowPresetTourMode1And2.getCount(); j++){
+                String data = (String) spnShowPresetTourMode1And2.getItemAtPosition(j);
+//                Log.i("jsonArrayData", nameClick + " - " + data);
+                if(nameClick.contains("Name: " + data + "\n")){
+                    spnShowPresetTourMode1And2.setSelection(j);
+                    break;
+                }
+            }
             currentSelectedTourMode = 1;
             currentSelectedPresetOfTourList = i;
         }
@@ -873,11 +977,19 @@ public class MainActivity extends AppCompatActivity {
             rlBackgroundFragmentAddTour.setVisibility(View.VISIBLE);
             imgDeleteAddTour.setVisibility(View.VISIBLE);
             disableLayout(rlShowDataSettingMode);
+            String nameClick = (String) lvListDataTour2.getItemAtPosition(i);
+            for(int j = 0; j < spnShowPresetTourMode1And2.getCount(); j++){
+                String data = (String) spnShowPresetTourMode1And2.getItemAtPosition(j);
+//                Log.i("jsonArrayData", nameClick + " - " + data);
+                if(nameClick.contains("Name: " + data + "\n")){
+                    spnShowPresetTourMode1And2.setSelection(j);
+                    break;
+                }
+            }
             currentSelectedTourMode = 2;
             currentSelectedPresetOfTourList = i;
         }
     };
-
 
     private static void disableLayout(ViewGroup layout) {
         layout.setEnabled(false);
@@ -903,6 +1015,107 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void saveTextFileToDownloadFolder(String content){
+        File fileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),file_folder_name_save_setting);
+        if (!fileDir.exists())
+        {
+            fileDir.mkdirs();
+        }
+        File fileSaveTextDownload;
+        String file_name = sharedPreferences.getString(file_name_download_save_setting, "");
+        if(file_name.equals("")){
+            int count = 0;
+            while(true){
+                fileSaveTextDownload = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        + "/" + file_folder_name_save_setting,file_folder_name_save_setting + String.valueOf(count)+".txt");
+                if(!fileSaveTextDownload.exists()){
+                    editor.putString(file_name_download_save_setting, file_folder_name_save_setting + String.valueOf(count)+".txt");
+                    break;
+                }
+                if(fileSaveTextDownload.exists()){
+                    if(fileSaveTextDownload.delete()){
+                        editor.putString(file_name_download_save_setting, file_folder_name_save_setting + String.valueOf(count)+".txt");
+                        break;
+                    }
+                    Log.i("jsonObject put", fileSaveTextDownload.getAbsolutePath());
+                }
+                count++;
+            }
+        }
+        else{
+            fileSaveTextDownload = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    + "/" + file_folder_name_save_setting,file_name);
+        }
+
+        if(!fileSaveTextDownload.exists()){
+            try {
+                fileSaveTextDownload.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(fileSaveTextDownload);
+            try {
+                fos.write(content.getBytes());
+                fos.close();
+                Toast.makeText(MainActivity.this, "save!", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, "error save!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this, "file not found!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE_SELECT_FILE_SETTING && resultCode == RESULT_OK){
+            if(data != null){
+                Uri uri = data.getData();
+                byte[] bytes = getBytesFromUri(getApplicationContext(), uri);
+                String dataFile = new String(bytes);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(dataFile);
+                    String dataPreset = jsonObject.getString("preset");
+                    String dataTour = jsonObject.getString("tour");
+                    editor.putString(presetStr, dataPreset);
+                    editor.putString(tourStr, dataTour);
+                    editor.commit();
+                    loadDataPreset(sharedPreferences.getString(presetStr, ""));
+                    loadDataTour(sharedPreferences.getString(tourStr, ""));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    byte[] getBytesFromUri(Context context, Uri uri){
+        InputStream iStream = null;
+        try {
+            iStream = context.getContentResolver().openInputStream(uri);
+            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+            int len = 0;
+            while ( (len = iStream.read(buffer)) != -1){
+                byteBuffer.write(buffer, 0, len);
+            }
+            return byteBuffer.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
 
     private class ConnectThread extends Thread {
         private BluetoothSocket mmSocket;
