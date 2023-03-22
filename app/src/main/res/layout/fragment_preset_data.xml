@@ -9,7 +9,7 @@
         android:layout_height="match_parent"/>
     <LinearLayout
         android:id="@+id/llRequestDataPreset"
-        android:weightSum="5"
+        android:weightSum="4"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="40dp">
@@ -21,17 +21,6 @@
             <ImageView
                 android:id="@+id/imgAddPreset"
                 android:background="@mipmap/icon_add_new"
-                android:layout_width="40dp"
-                android:layout_height="40dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/imgSendDataPresetToDevice"
-                android:background="@mipmap/icon_send_data"
                 android:layout_width="40dp"
                 android:layout_height="40dp"/>
         </LinearLayout>
@@ -63,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ImageView
-                android:id="@+id/imgSyncDataFromDevice"
+                android:id="@+id/imgSyncDataPresetFromDevice"
                 android:background="@mipmap/icon_sync"
                 android:layout_width="40dp"
                 android:layout_height="40dp"/>

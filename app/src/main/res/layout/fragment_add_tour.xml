@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <Spinner
-            android:id="@+id/spnShowPresetTourMode1And2"
+            android:id="@+id/spnShowPresetTourMode1To4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>

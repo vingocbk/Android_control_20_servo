@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/imgSyncDataTourFromDevice"
-            android:text="Mode Running: Mode Position"
+            android:text="Mode Running: None"
             android:textSize="20sp"
             android:textStyle="bold" />
         <ImageView
@@ -27,120 +27,211 @@
             android:layout_height="40dp"/>
     </RelativeLayout>
 
-<!--    <ScrollView-->
-<!--        android:layout_below="@+id/rlTop"-->
-<!--        android:layout_above="@+id/rlBottom"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-<!--        -->
-<!--    </ScrollView>-->
-    <LinearLayout
-        android:weightSum="2"
-        android:orientation="vertical"
+    <ScrollView
         android:layout_below="@+id/rlTop"
         android:layout_above="@+id/rlBottom"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <RelativeLayout
-            android:layout_weight="1"
-            android:background="#25000000"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/txtMode1"
-                android:text="Mode 1"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <ListView
-                android:id="@+id/lvListDataTour1"
-                android:layout_below="@+id/txtMode1"
-                android:layout_above="@+id/llRequestMod1"
+            <RelativeLayout
+                android:background="#25000000"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <LinearLayout
-                android:id="@+id/llRequestMod1"
-                android:weightSum="2"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="250dp">
+                <TextView
+                    android:id="@+id/txtMode1"
+                    android:text="Mode 1"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <ListView
+                    android:id="@+id/lvListDataTour1"
+                    android:layout_below="@+id/txtMode1"
+                    android:layout_above="@+id/llRequestMod1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:id="@+id/llRequestMod1"
+                    android:weightSum="2"
+                    android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/imgAddTourMode1"
-                        android:background="@mipmap/icon_add_new"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"/>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgAddTourMode1"
+                            android:background="@mipmap/icon_add_new"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgSendDataTourMode1ToDevice"
+                            android:background="@mipmap/icon_send_data"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/imgSendDataTourMode1ToDevice"
-                        android:background="@mipmap/icon_send_data"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:background="#25000000"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/txtMode2"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="Mode 2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <ListView
-                android:id="@+id/lvListDataTour2"
-                android:layout_below="@+id/txtMode2"
-                android:layout_above="@+id/llRequestMode2"
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:background="#25000000"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <LinearLayout
-                android:id="@+id/llRequestMode2"
-                android:weightSum="2"
-                android:layout_alignParentBottom="true"
+                android:layout_height="250dp">
+                <TextView
+                    android:id="@+id/txtMode2"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Mode 2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <ListView
+                    android:id="@+id/lvListDataTour2"
+                    android:layout_below="@+id/txtMode2"
+                    android:layout_above="@+id/llRequestMode2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <LinearLayout
+                    android:id="@+id/llRequestMode2"
+                    android:weightSum="2"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgAddTourMode2"
+                            android:background="@mipmap/icon_add_new"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgSendDataTourMode2ToDevice"
+                            android:background="@mipmap/icon_send_data"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:background="#25000000"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="250dp">
+                <TextView
+                    android:id="@+id/txtMode3"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Mode 3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <ListView
+                    android:id="@+id/lvListDataTour3"
+                    android:layout_below="@+id/txtMode3"
+                    android:layout_above="@+id/llRequestMode3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:id="@+id/llRequestMode3"
+                    android:weightSum="2"
+                    android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/imgAddTourMode2"
-                        android:background="@mipmap/icon_add_new"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"/>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgAddTourMode3"
+                            android:background="@mipmap/icon_add_new"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgSendDataTourMode3ToDevice"
+                            android:background="@mipmap/icon_send_data"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
                 </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:background="#25000000"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+                <TextView
+                    android:id="@+id/txtMode4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Mode 4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <ListView
+                    android:id="@+id/lvListDataTour4"
+                    android:layout_below="@+id/txtMode4"
+                    android:layout_above="@+id/llRequestMode4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:id="@+id/llRequestMode4"
+                    android:weightSum="2"
+                    android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/imgSendDataTourMode2ToDevice"
-                        android:background="@mipmap/icon_send_data"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"/>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgAddTourMode4"
+                            android:background="@mipmap/icon_add_new"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/imgSendDataTourMode4ToDevice"
+                            android:background="@mipmap/icon_send_data"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"/>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
     <LinearLayout
         android:id="@+id/rlBottom"
@@ -152,7 +243,7 @@
         <TextView
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Mode 3"
+            android:text="Mode 5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <LinearLayout
@@ -178,7 +269,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <Spinner
-                        android:id="@+id/spnShowPresetOpenTourMode3"
+                        android:id="@+id/spnShowPresetOpenTourMode5"
                         android:layout_marginStart="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -195,7 +286,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <Spinner
-                        android:id="@+id/spnShowPresetCloseTourMode3"
+                        android:id="@+id/spnShowPresetCloseTourMode5"
                         android:layout_marginStart="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -208,7 +299,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:id="@+id/imgSendDataTourMode3ToDevice"
+                    android:id="@+id/imgSendDataTourMode5ToDevice"
                     android:background="@mipmap/icon_send_data"
                     android:layout_width="40dp"
                     android:layout_height="40dp"/>
