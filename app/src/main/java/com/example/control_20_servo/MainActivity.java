@@ -336,12 +336,13 @@ public class MainActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
     }
 
-    public void loadDataPreset(String jsonData){
+    public boolean loadDataPreset(String jsonData){
         listDataPreset = new ArrayList<>();
         DataPresetAdapter adapter = new DataPresetAdapter(this, R.layout.list_view_data_preset, listDataPreset);
         //-------------------
         if(!jsonData.equals("")){
             try {
+//                Log.i("incomingMessage", jsonData);
                 JSONArray jsonArrayDataReceive = new JSONArray(jsonData);
                 for(int i = 0; i < jsonArrayDataReceive.length(); i++){
                     JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
@@ -355,9 +356,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                return false;
             }
         }
         lvListDataPreset.setAdapter(adapter);
+        return true;
     }
 
     public void loadDataTour(String dataTour){
@@ -508,30 +511,35 @@ public class MainActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Log.i(TAG, arrayAdapterListdevice.getItem(i));
+            if(mmDevice != null && isConnected(mmDevice)){
+                mConnectedThread.cancel();
+                mmDevice = null;
+                layoutListDevice.setVisibility(View.INVISIBLE);
+                setLayoutDisconnectBluetooth();
+                return;
+            }
             pgbRefreshListDevice.setVisibility(View.VISIBLE);
-            BluetoothDevice bluetoothDeviceconnect = (BluetoothDevice) ObjectBluetooth[i];
+            BluetoothDevice bluetoothDeviceConnect = (BluetoothDevice) ObjectBluetooth[i];
 
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
 //                    return;
             }
-            deviceName = bluetoothDeviceconnect.getName();
-            String deviceAdress = bluetoothDeviceconnect.getAddress();
+            deviceName = bluetoothDeviceConnect.getName();
+            String deviceAddress = bluetoothDeviceConnect.getAddress();
 
             Log.d(TAG, "onItemClick: deviceName = " + deviceName);
-            Log.d(TAG, "onItemClick: deviceAdress = " + deviceAdress);
+            Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
             Log.d(TAG, "Trying to Pair with " + deviceName);
-            bluetoothDeviceconnect.createBond();
+            bluetoothDeviceConnect.createBond();
 
-            mDeviceUUIDs = bluetoothDeviceconnect.getUuids();
-
+            mDeviceUUIDs = bluetoothDeviceConnect.getUuids();
 
             Log.d(TAG, "Trying to create UUID: " + deviceName);
 
             for (ParcelUuid uuid : mDeviceUUIDs) {
                 Log.d(TAG, "UUID: " + uuid.getUuid().toString());
             }
-            ConnectThread connect = new ConnectThread(bluetoothDeviceconnect, MY_UUID_INSECURE);
+            ConnectThread connect = new ConnectThread(bluetoothDeviceConnect, MY_UUID_INSECURE);
             connect.start();
         }
     };
@@ -670,18 +678,12 @@ public class MainActivity extends AppCompatActivity {
             }
             try {
                 JSONArray jsonArrayTour5 = new JSONArray();
-                jsonArrayTour5.put((Integer) spnShowPresetOpenTourMode5.getSelectedItemPosition());
-                jsonArrayTour5.put((Integer)spnShowPresetCloseTourMode5.getSelectedItemPosition());
+                jsonArrayTour5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
+                jsonArrayTour5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
                 jsonObjectTour.put("5", jsonArrayTour5);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            Log.i("jsonArrayData", jsonObjectTour.toString());
-//            editor.putString(tourStr, jsonObjectTour.toString());
-//            editor.commit();
-
-//            Toast.makeText(MainActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
-            //data to file example:
             JSONObject jsonObjectFile = new JSONObject();
             try {
                 jsonObjectFile.put("preset", jsonArrayPreset);
@@ -733,7 +735,12 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObjectData = new JSONObject();
                 try {
                     jsonObjectData.put("type", "save_tour");
+                    JSONArray jsonArrayMode5 = new JSONArray();
+                    jsonArrayMode5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
+                    jsonArrayMode5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
                     JSONObject jsonObject = new JSONObject(dataTourCurrent);
+                    jsonObject.put("5", jsonArrayMode5);
+                    dataTourCurrent = jsonObject.toString();
                     jsonObjectData.put("data", jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1415,14 +1422,28 @@ public class MainActivity extends AppCompatActivity {
                     count[0]++;
                     if(!isSyncPresetWithDevice){
                         if(count[0]%2 == 0){
-                            String data = "{\"type\":\"sync_preset\"}";
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("type", "sync_preset");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+//                            String data = "{\"type\":\"sync_preset\"}";
+                            String data = jsonObject.toString();
                             byte[] bytes = data.getBytes(Charset.defaultCharset());
                             mConnectedThread.write(bytes);
                         }
                     }
                     if(!isSyncTourWithDevice){
                         if(count[0]%2 == 1){
-                            String data = "{\"type\":\"sync_tour\"}";
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("type", "sync_tour");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+//                            String data = "{\"type\":\"sync_tour\"}";
+                            String data = jsonObject.toString();
                             byte[] bytes = data.getBytes(Charset.defaultCharset());
                             mConnectedThread.write(bytes);
                         }
@@ -1433,14 +1454,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(mmDevice != null){
                     if(!isConnected(mmDevice) && isSyncPresetWithDevice && isSyncTourWithDevice){
-                        loadDataPreset("");
-                        loadDataTour("");
-                        isSyncPresetWithDevice = false;
-                        isSyncTourWithDevice = false;
-                        prbSyncDataWithDevice.setVisibility(View.INVISIBLE);
-                        imgBluetoothConnection.setBackgroundResource(R.mipmap.ic_bluetooth_disconnected);
-                        txtNameBluetoothConnection.setText("No Connected");
-                        txtCurrentModeRunDevice.setText("Mode Running: None");
+                        setLayoutDisconnectBluetooth();
                     }
                 }
 
@@ -1449,6 +1463,17 @@ public class MainActivity extends AppCompatActivity {
         }, delay);
 
         super.onResume();
+    }
+
+    public void setLayoutDisconnectBluetooth(){
+        loadDataPreset("");
+        loadDataTour("");
+        isSyncPresetWithDevice = false;
+        isSyncTourWithDevice = false;
+        prbSyncDataWithDevice.setVisibility(View.INVISIBLE);
+        imgBluetoothConnection.setBackgroundResource(R.mipmap.ic_bluetooth_disconnected);
+        txtNameBluetoothConnection.setText("No Connected");
+        txtCurrentModeRunDevice.setText("Mode Running: None");
     }
 
     @Override
@@ -1625,24 +1650,24 @@ public class MainActivity extends AppCompatActivity {
                     if(incomingMessage.contains("#")){
                         incomingMessage = incomingMessage.replace("#","");
                         Log.d("incomingMessage", "InputStream: " + incomingMessage);
-                        JSONArray reader = new JSONArray(incomingMessage);
                         dataPresetCurrent = incomingMessage;
+                        incomingMessage = "";
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void run() {
                                 //-------
-                                loadDataPreset(dataPresetCurrent);
-                                isSyncPresetWithDevice = true;
+                                if(loadDataPreset(dataPresetCurrent)){
+                                    isSyncPresetWithDevice = true;
+                                }
                             }
                         });
-                        incomingMessage = "";
+
                     }
                     //Sync Tour
                     if(incomingMessage.contains("%")){
                         incomingMessage = incomingMessage.replace("%","");
                         Log.d("incomingMessage", "InputStream: " + incomingMessage);
-                        JSONObject reader = new JSONObject(incomingMessage);
                         dataTourCurrent = incomingMessage;
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
@@ -1673,6 +1698,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "write: Error reading Input Stream. " + e.getMessage());
+                    if(Objects.equals(e.getMessage(), "socket closed")){
+                        break;
+                    }
 //                    break;
                 }
             }
