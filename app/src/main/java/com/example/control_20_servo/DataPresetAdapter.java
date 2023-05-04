@@ -44,6 +44,7 @@ public class DataPresetAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(parent.getContext()).inflate(idLayout, parent, false);
         }
         TextView txtNamePresetListView = (TextView) convertView.findViewById(R.id.txtNamePresetListView);
+        TextView txtSpeedPresetListView = (TextView) convertView.findViewById(R.id.txtSpeedPresetListView);
         TextView[] txtAnglePresetListView = new TextView[20];
         txtAnglePresetListView[0] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView1);
         txtAnglePresetListView[1] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView2);
@@ -66,11 +67,10 @@ public class DataPresetAdapter extends BaseAdapter {
         txtAnglePresetListView[18] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView19);
         txtAnglePresetListView[19] = (TextView) convertView.findViewById(R.id.txtAnglePresetListView20);
 
-
         final DataPreset data = listDataPreset.get(position);
-
         if (listDataPreset != null && !listDataPreset.isEmpty()) {
             txtNamePresetListView.setText("Name: " + data.getName());
+            txtSpeedPresetListView.setText("Speed: " + String.valueOf(data.getSpeed()));
             int[] angle = data.getAngle();
             for(int i = 0; i < angle.length; i++){
                 txtAnglePresetListView[i].setText(String.valueOf(i+1) + ": " + String.valueOf(angle[i]));

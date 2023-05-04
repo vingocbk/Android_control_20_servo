@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     Spinner spnShowPresetOpenTourMode5, spnShowPresetCloseTourMode5, spnShowPresetTourMode1To4;
     EditText edtSetTimeDelayPresetOfTour;
-    EditText edtSetNamePreset;
+    EditText edtSetNamePreset, edtSetSpeedPreset;
     EditText[] edtAngleServo = new EditText[20];
 
     ProgressBar prbSyncDataWithDevice;
@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         layoutSetupTour = findViewById(R.id.layoutSetupTour);
 
         edtSetNamePreset = findViewById(R.id.edtSetNamePreset);
+        edtSetSpeedPreset = findViewById(R.id.edtSetSpeedPreset);
         edtAngleServo[0] = findViewById(R.id.edtAngleServo1);
         edtAngleServo[1] = findViewById(R.id.edtAngleServo2);
         edtAngleServo[2] = findViewById(R.id.edtAngleServo3);
@@ -347,12 +348,13 @@ public class MainActivity extends AppCompatActivity {
                 for(int i = 0; i < jsonArrayDataReceive.length(); i++){
                     JSONObject jsonObjectData = jsonArrayDataReceive.getJSONObject(i);
                     String name = jsonObjectData.getString("1");
-                    JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("2");
+                    int speed = jsonObjectData.getInt("2");
+                    JSONArray jsonArrayAngle = jsonObjectData.getJSONArray("3");
                     int[] angle = new int[20];
                     for(int j = 0; j < jsonArrayAngle.length(); j++){
                         angle[j] = jsonArrayAngle.getInt(j);
                     }
-                    listDataPreset.add(new DataPreset(i, name, angle));
+                    listDataPreset.add(new DataPreset(i, name, speed, angle));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -372,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapterListDataTour4 = new ArrayAdapter<String>(MainActivity.this, simple_list_item_1);
 //        String dataTour = sharedPreferences.getString(tourStr, "");
         JSONObject jsonObjectTour = new JSONObject();
-        //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "4":[{"1":"tuyet","2":2}], "5":[1,2]}
+        //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "4":[{"1":"tuyet","2":2}]}
         if(!dataTour.equals("")){
             try {
                 jsonObjectTour = new JSONObject(dataTour);
@@ -419,15 +421,15 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try {
-                JSONArray jsonArrayMode5 = jsonObjectTour.getJSONArray("5");
-                int openMode5 = jsonArrayMode5.getInt(0);
-                int closeMode5 = jsonArrayMode5.getInt(1);
-                spnShowPresetOpenTourMode5.setSelection(openMode5);
-                spnShowPresetCloseTourMode5.setSelection(closeMode5);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                JSONArray jsonArrayMode5 = jsonObjectTour.getJSONArray("5");
+//                int openMode5 = jsonArrayMode5.getInt(0);
+//                int closeMode5 = jsonArrayMode5.getInt(1);
+//                spnShowPresetOpenTourMode5.setSelection(openMode5);
+//                spnShowPresetCloseTourMode5.setSelection(closeMode5);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         }
         lvListDataTour1.setAdapter(arrayAdapterListDataTour1);
         lvListDataTour2.setAdapter(arrayAdapterListDataTour2);
@@ -551,6 +553,7 @@ public class MainActivity extends AppCompatActivity {
             imgDeleteAddPreset.setVisibility(View.INVISIBLE);
             disableLayout(rlShowDataSettingMode);
             edtSetNamePreset.getText().clear();
+            edtSetSpeedPreset.getText().clear();
             for(int i = 0; i < 20; i++){
                 edtAngleServo[i].getText().clear();
             }
@@ -566,18 +569,19 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "No data to Save", Toast.LENGTH_SHORT).show();
                 return;
             }
-            //data example [{"1":"ngoc","2":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]
+            //data example [{"1":"ngoc","2":10,"3":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]
             for(int i = 0; i < listDataPreset.size(); i++){
                 DataPreset dataPreset = listDataPreset.get(i);
                 JSONObject jsonObject = new JSONObject();
                 JSONArray jsonArrayAngle = new JSONArray();
                 try {
                     jsonObject.put("1", dataPreset.getName());
+                    jsonObject.put("2", dataPreset.getSpeed());
                     int[] angle = dataPreset.getAngle();
                     for(int j = 0; j < angle.length; j++){
                         jsonArrayAngle.put(angle[j]);
                     }
-                    jsonObject.put("2", jsonArrayAngle);
+                    jsonObject.put("3", jsonArrayAngle);
                     jsonArrayPreset.put(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -586,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.i("jsonArrayData", jsonArray.toString());
 //            editor.putString(presetStr, jsonArrayPreset.toString());
 
-            //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "2":[{"4":"tuyet","2":2}], "5":[1,2]}
+            //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "2":[{"4":"tuyet","2":2}]}
             JSONObject jsonObjectTour = new JSONObject();
             if(lvListDataTour1.getCount() > 0){
                 JSONArray jsonArrayTour1 = new JSONArray();
@@ -676,14 +680,14 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            try {
-                JSONArray jsonArrayTour5 = new JSONArray();
-                jsonArrayTour5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
-                jsonArrayTour5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
-                jsonObjectTour.put("5", jsonArrayTour5);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                JSONArray jsonArrayTour5 = new JSONArray();
+//                jsonArrayTour5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
+//                jsonArrayTour5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
+//                jsonObjectTour.put("5", jsonArrayTour5);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
             JSONObject jsonObjectFile = new JSONObject();
             try {
                 jsonObjectFile.put("preset", jsonArrayPreset);
@@ -693,7 +697,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
     };
 
@@ -755,8 +758,8 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener onClickImgOkAddPreset = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if(edtSetNamePreset.getText().toString().equals("")){
-                Toast.makeText(MainActivity.this, "Enter Name!", Toast.LENGTH_SHORT).show();
+            if(edtSetNamePreset.getText().toString().equals("") || edtSetSpeedPreset.getText().toString().equals("")){
+                Toast.makeText(MainActivity.this, "Enter Name and Speed!", Toast.LENGTH_SHORT).show();
                 return;
             }
             if(currentSelectedPresetList > lvListDataPreset.getAdapter().getCount()){
@@ -782,6 +785,7 @@ public class MainActivity extends AppCompatActivity {
                     jsonArrayData = new JSONArray(dataPresetCurrent);
                 }
                 jsonObjectData.put("1", edtSetNamePreset.getText().toString());
+                jsonObjectData.put("2", Integer.valueOf(edtSetSpeedPreset.getText().toString()));
                 for(int i = 0; i < 20; i++){
                     if(!edtAngleServo[i].getText().toString().equals(""))
                     {
@@ -791,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
                         jsonArrayAngle.put(0);
                     }
                 }
-                jsonObjectData.put("2",jsonArrayAngle);
+                jsonObjectData.put("3",jsonArrayAngle);
                 if(currentSelectedPresetList > lvListDataPreset.getAdapter().getCount()){
                     jsonArrayData.put(jsonObjectData);
                 }
@@ -845,9 +849,10 @@ public class MainActivity extends AppCompatActivity {
             imgDeleteAddPreset.setVisibility(View.VISIBLE);
             disableLayout(rlShowDataSettingMode);
             DataPreset dataPreset = listDataPreset.get(i);
+            edtSetNamePreset.setText(dataPreset.getName());
+            edtSetSpeedPreset.setText(String.valueOf(dataPreset.getSpeed()));
             int[] angle = dataPreset.getAngle();
             for(int j = 0; j < angle.length; j++){
-                edtSetNamePreset.setText(dataPreset.getName());
                 edtAngleServo[j].setText(String.valueOf(angle[j]));
             }
             currentSelectedPresetList = i;

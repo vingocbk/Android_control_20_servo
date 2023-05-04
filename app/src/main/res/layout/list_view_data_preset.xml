@@ -3,13 +3,28 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/txtNamePresetListView"
-        android:layout_gravity="center"
-        android:text="Name: Home"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:weightSum="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/txtNamePresetListView"
+            android:gravity="center"
+            android:text="Name: Home"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/txtSpeedPresetListView"
+            android:gravity="center"
+            android:text="Speed: 10"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
     <LinearLayout
         android:weightSum="5"
         android:gravity="center"
