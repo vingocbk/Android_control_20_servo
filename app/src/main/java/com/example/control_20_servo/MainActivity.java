@@ -81,10 +81,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapterListDataTour1, arrayAdapterListDataTour2, arrayAdapterListDataTour3, arrayAdapterListDataTour4;
     public ListView lvListDataPreset, lvListDataTour1, lvListDataTour2, lvListDataTour3, lvListDataTour4;
     public RelativeLayout rlShowDataSettingMode;
-    ImageView imgAddPreset, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataPresetFromDevice, imgSyncDataTourFromDevice;
-    ImageView imgOkAddPreset, imgDeleteAddPreset, imgCancelAddPreset;
+    ImageView imgAddPreset, imgSaveDataToLocalFile, imgGetDataFromLocalFile, imgSyncDataPresetFromDevice, imgSendDataPresetToDevice
+                , imgSyncDataTourFromDevice, imgSendDataTourToDevice;
+    ImageView imgOkAddPreset, imgDeleteAddPreset, imgCancelAddPreset, imgSendCurrentPresetToDevice;
     ImageView imgAddTourMode1, imgAddTourMode2, imgAddTourMode3, imgAddTourMode4;
-    ImageView imgSendDataTourMode1ToDevice, imgSendDataTourMode2ToDevice, imgSendDataTourMode3ToDevice, imgSendDataTourMode4ToDevice, imgSendDataTourMode5ToDevice;
+    ImageView imgSendDataTourMode1ToDevice, imgSendDataTourMode2ToDevice, imgSendDataTourMode3ToDevice, imgSendDataTourMode4ToDevice;
     ImageView imgOkAddTour, imgDeleteAddTour, imgCancelAddTour;
     TextView txtCurrentModeRunDevice;
 
@@ -173,10 +174,13 @@ public class MainActivity extends AppCompatActivity {
         imgSaveDataToLocalFile.setOnClickListener(onClickImgSaveDataToLocalFile);
         imgGetDataFromLocalFile.setOnClickListener(onClickImgGetDataFromLocalFile);
         imgSyncDataPresetFromDevice.setOnClickListener(onClickImgSyncDataPresetFromDevice);
+        imgSendDataPresetToDevice.setOnClickListener(onClickImgSendDataPresetToDevice);
         imgSyncDataTourFromDevice.setOnClickListener(onClickImgSyncDataTourFromDevice);
+        imgSendDataTourToDevice.setOnClickListener(onClickImgSendDataTourToDevice);
         imgOkAddPreset.setOnClickListener(onClickImgOkAddPreset);
         imgDeleteAddPreset.setOnClickListener(onClickImgDeleteAddPreset);
         imgCancelAddPreset.setOnClickListener(onClickImgCancelAddPreset);
+        imgSendCurrentPresetToDevice.setOnClickListener(onClickImgSendCurrentPresetToDevice);
         lvListDataPreset.setOnItemClickListener(onClickLvListDataPreset);
         llSelectSettingPreset.setOnClickListener(onClickLlSelectSettingPreset);
         llSelectSettingTour.setOnClickListener(onClickLlSelectSettingTour);
@@ -184,6 +188,11 @@ public class MainActivity extends AppCompatActivity {
         imgAddTourMode2.setOnClickListener(onClickImgAddTourMode2);
         imgAddTourMode3.setOnClickListener(onClickImgAddTourMode3);
         imgAddTourMode4.setOnClickListener(onClickImgAddTourMode4);
+        imgSendDataTourMode1ToDevice.setOnClickListener(onClickImgSendDataTourMode1ToDevice);
+        imgSendDataTourMode2ToDevice.setOnClickListener(onClickImgSendDataTourMode2ToDevice);
+        imgSendDataTourMode3ToDevice.setOnClickListener(onClickImgSendDataTourMode3ToDevice);
+        imgSendDataTourMode4ToDevice.setOnClickListener(onClickImgSendDataTourMode4ToDevice);
+
         imgOkAddTour.setOnClickListener(onClickImgOkAddTour);
         imgDeleteAddTour.setOnClickListener(onClickImgDeleteAddTour);
         imgCancelAddTour.setOnClickListener(onClickImgCancelAddTour);
@@ -245,11 +254,14 @@ public class MainActivity extends AppCompatActivity {
         imgSaveDataToLocalFile = findViewById(R.id.imgSaveDataToLocalFile);
         imgGetDataFromLocalFile = findViewById(R.id.imgGetDataFromLocalFile);
         imgSyncDataPresetFromDevice = findViewById(R.id.imgSyncDataPresetFromDevice);
+        imgSendDataPresetToDevice = findViewById(R.id.imgSendDataPresetToDevice);
         imgSyncDataTourFromDevice = findViewById(R.id.imgSyncDataTourFromDevice);
+        imgSendDataTourToDevice = findViewById(R.id.imgSendDataTourToDevice);
 
         imgOkAddPreset = findViewById(R.id.imgOkAddPreset);
         imgDeleteAddPreset = findViewById(R.id.imgDeleteAddPreset);
         imgCancelAddPreset = findViewById(R.id.imgCancelAddPreset);
+        imgSendCurrentPresetToDevice = findViewById(R.id.imgSendCurrentPresetToDevice);
 
         imgAddTourMode1 = findViewById(R.id.imgAddTourMode1);
         imgAddTourMode2 = findViewById(R.id.imgAddTourMode2);
@@ -259,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
         imgSendDataTourMode2ToDevice = findViewById(R.id.imgSendDataTourMode2ToDevice);
         imgSendDataTourMode3ToDevice = findViewById(R.id.imgSendDataTourMode3ToDevice);
         imgSendDataTourMode4ToDevice = findViewById(R.id.imgSendDataTourMode4ToDevice);
-        imgSendDataTourMode5ToDevice = findViewById(R.id.imgSendDataTourMode5ToDevice);
 
         imgOkAddTour = findViewById(R.id.imgOkAddTour);
         imgDeleteAddTour = findViewById(R.id.imgDeleteAddTour);
@@ -421,15 +432,12 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            try {
-//                JSONArray jsonArrayMode5 = jsonObjectTour.getJSONArray("5");
-//                int openMode5 = jsonArrayMode5.getInt(0);
-//                int closeMode5 = jsonArrayMode5.getInt(1);
-//                spnShowPresetOpenTourMode5.setSelection(openMode5);
-//                spnShowPresetCloseTourMode5.setSelection(closeMode5);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                String modeRun = jsonObjectTour.getString("5");
+                txtCurrentModeRunDevice.setText(modeRun);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         lvListDataTour1.setAdapter(arrayAdapterListDataTour1);
         lvListDataTour2.setAdapter(arrayAdapterListDataTour2);
@@ -590,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.i("jsonArrayData", jsonArray.toString());
 //            editor.putString(presetStr, jsonArrayPreset.toString());
 
-            //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "2":[{"4":"tuyet","2":2}]}
+            //data example" {"1":[{"1":"ngoc","2":2}], "2":[{"1":"tuyet","2":2}], "3":[{"1":"tuyet","2":2}], "4":[{"4":"tuyet","2":2}], "5":"Mode 1"}
             JSONObject jsonObjectTour = new JSONObject();
             if(lvListDataTour1.getCount() > 0){
                 JSONArray jsonArrayTour1 = new JSONArray();
@@ -680,14 +688,11 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-//            try {
-//                JSONArray jsonArrayTour5 = new JSONArray();
-//                jsonArrayTour5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
-//                jsonArrayTour5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
-//                jsonObjectTour.put("5", jsonArrayTour5);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                jsonObjectTour.put("5", txtCurrentModeRunDevice.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             JSONObject jsonObjectFile = new JSONObject();
             try {
                 jsonObjectFile.put("preset", jsonArrayPreset);
@@ -718,9 +723,7 @@ public class MainActivity extends AppCompatActivity {
             if (mmDevice != null && isConnected(mmDevice)) {
                 JSONObject jsonObjectData = new JSONObject();
                 try {
-                    jsonObjectData.put("type", "save_preset");
-                    JSONArray jsonArray = new JSONArray(dataPresetCurrent);
-                    jsonObjectData.put("data", jsonArray);
+                    jsonObjectData.put("type", "sync_preset");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -731,26 +734,64 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    View.OnClickListener onClickImgSyncDataTourFromDevice = new View.OnClickListener() {
+    View.OnClickListener onClickImgSendDataPresetToDevice = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if (mmDevice != null && isConnected(mmDevice)) {
                 JSONObject jsonObjectData = new JSONObject();
                 try {
-                    jsonObjectData.put("type", "save_tour");
-                    JSONArray jsonArrayMode5 = new JSONArray();
-                    jsonArrayMode5.put(spnShowPresetOpenTourMode5.getSelectedItemPosition());
-                    jsonArrayMode5.put(spnShowPresetCloseTourMode5.getSelectedItemPosition());
-                    JSONObject jsonObject = new JSONObject(dataTourCurrent);
-                    jsonObject.put("5", jsonArrayMode5);
-                    dataTourCurrent = jsonObject.toString();
-                    jsonObjectData.put("data", jsonObject);
+                    jsonObjectData.put("type", "save_preset");
+                    JSONArray jsonArray = new JSONArray(dataPresetCurrent);
+                    jsonObjectData.put("data", jsonArray);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
                 mConnectedThread.write(bytes);
                 Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgSyncDataTourFromDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "sync_tour");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataTourToDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "save_tour");
+                    Log.i("incomingMessage", dataTourCurrent);
+                    JSONObject jsonData = new JSONObject(dataTourCurrent);
+                    jsonObjectData.put("data", jsonData);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -842,6 +883,29 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    View.OnClickListener onClickImgSendCurrentPresetToDevice = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "control");
+                    jsonObjectData.put("mode", "preset");
+                    DataPreset dataPreset = listDataPreset.get(currentSelectedPresetList);
+                    jsonObjectData.put("data", dataPreset.getName());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
     AdapterView.OnItemClickListener onClickLvListDataPreset = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -927,6 +991,98 @@ public class MainActivity extends AppCompatActivity {
             disableLayout(rlShowDataSettingMode);
             currentSelectedTourMode = 4;
             currentSelectedPresetOfTourList = lvListDataTour4.getAdapter().getCount() + 1;
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataTourMode1ToDevice = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "control");
+                    jsonObjectData.put("mode", "tour");
+                    jsonObjectData.put("data", "1");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataTourMode2ToDevice = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "control");
+                    jsonObjectData.put("mode", "tour");
+                    jsonObjectData.put("data", "2");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataTourMode3ToDevice = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "control");
+                    jsonObjectData.put("mode", "tour");
+                    jsonObjectData.put("data", "3");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    View.OnClickListener onClickImgSendDataTourMode4ToDevice = new View.OnClickListener() {
+        @SuppressLint("ResourceAsColor")
+        @Override
+        public void onClick(View view) {
+            if (mmDevice != null && isConnected(mmDevice)) {
+                JSONObject jsonObjectData = new JSONObject();
+                try {
+                    jsonObjectData.put("type", "control");
+                    jsonObjectData.put("mode", "tour");
+                    jsonObjectData.put("data", "4");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = jsonObjectData.toString().getBytes(Charset.defaultCharset());
+                mConnectedThread.write(bytes);
+                Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(MainActivity.this, "FAIL, CONNECT TO DEVICE!", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -1181,6 +1337,7 @@ public class MainActivity extends AppCompatActivity {
             imgDeleteAddTour.setVisibility(View.VISIBLE);
             disableLayout(rlShowDataSettingMode);
             String nameClick = (String) lvListDataTour1.getItemAtPosition(i);
+//            Log.i("incomingMessage", nameClick);
             for(int j = 0; j < spnShowPresetTourMode1To4.getCount(); j++){
                 String data = (String) spnShowPresetTourMode1To4.getItemAtPosition(j);
 //                Log.i("jsonArrayData", nameClick + " - " + data);
@@ -1478,7 +1635,7 @@ public class MainActivity extends AppCompatActivity {
         prbSyncDataWithDevice.setVisibility(View.INVISIBLE);
         imgBluetoothConnection.setBackgroundResource(R.mipmap.ic_bluetooth_disconnected);
         txtNameBluetoothConnection.setText("No Connected");
-        txtCurrentModeRunDevice.setText("Mode Running: None");
+        txtCurrentModeRunDevice.setText("None");
     }
 
     @Override
@@ -1703,7 +1860,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "write: Error reading Input Stream. " + e.getMessage());
-                    if(Objects.equals(e.getMessage(), "socket closed")){
+                    if(e.getMessage().toString().contains("socket closed")){
                         break;
                     }
 //                    break;
